@@ -17,6 +17,7 @@ before_install:
 
 script:
  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install xsel; fi
- - go test -v .
+ - go test -v ./...
  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install xclip; fi
- - go test -v .
+ - go test -v ./...
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then GOOS=js GOARCH=wasm go test -c -o /tmp/clipboard.wasm .; fi

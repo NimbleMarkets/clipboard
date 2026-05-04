@@ -87,3 +87,21 @@ func TestClipboardModeOverride(t *testing.T) {
 		_ = tt
 	}
 }
+
+func TestWriteAllWhenUnsupported(t *testing.T) {
+	// Save original Unsupported state
+	oldUnsupported := Unsupported
+	defer func() { Unsupported = oldUnsupported }()
+
+	// Set Unsupported to true (simulates disabled mode or detection failure)
+	Unsupported = true
+
+	// WriteAll should return an error
+	err := WriteAll("test text")
+	if err == nil {
+		t.Error("WriteAll() should return error when Unsupported is true")
+	}
+	if err != nil && !strings.Contains(err.Error(), "not available") {
+		t.Errorf("Error message should mention 'not available', got %q", err.Error())
+	}
+}

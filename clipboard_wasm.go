@@ -13,6 +13,8 @@ import (
 	"os"
 )
 
+const wasmUnsupportedErr = "clipboard is not available (disabled or auto-detection failed)"
+
 // encodeOSC52 encodes text as an OSC 52 escape sequence.
 // Format: ESC ] 52 ; c ; <base64-encoded-text> BEL
 // Where ESC is \x1b and BEL is \x07
@@ -22,6 +24,9 @@ func encodeOSC52(text string) string {
 }
 
 func writeAll(text string) error {
+	if Unsupported {
+		return errors.New(wasmUnsupportedErr)
+	}
 	sequence := encodeOSC52(text)
 	_, err := os.Stdout.Write([]byte(sequence))
 	return err

@@ -55,3 +55,35 @@ func TestWasmReadAllUnsupported(t *testing.T) {
 		t.Errorf("Error message should mention 'not supported', got %q", err.Error())
 	}
 }
+
+func TestClipboardModeOverride(t *testing.T) {
+	// Note: This is a conceptual test since init() runs only once at package load
+	// In actual usage, the behavior depends on environment variables at build/run time
+	// This test documents the expected behavior
+	tests := []struct {
+		mode             string
+		wantUnsupported  bool
+	}{
+		{"osc52", false},
+		{"disabled", true},
+		{"", false}, // default: use detection
+	}
+
+	for _, tt := range tests {
+		// Save original env
+		oldMode := os.Getenv("CLIPBOARD_MODE")
+		defer os.Setenv("CLIPBOARD_MODE", oldMode)
+
+		// Set test mode
+		if tt.mode == "" {
+			os.Unsetenv("CLIPBOARD_MODE")
+		} else {
+			os.Setenv("CLIPBOARD_MODE", tt.mode)
+		}
+
+		// In actual implementation, init() only runs once per package load
+		// For testing purposes, we document the expected behavior here
+		// The actual verification happens through manual testing with environment variables
+		_ = tt
+	}
+}

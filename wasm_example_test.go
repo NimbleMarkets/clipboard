@@ -13,8 +13,8 @@ import (
 	"github.com/atotto/clipboard"
 )
 
-// ExampleWasmWriteOSC52 demonstrates writing to clipboard in WASM mode using OSC 52.
-func ExampleWasmWriteOSC52() {
+// ExampleWriteAll demonstrates writing to clipboard in WASM mode using OSC 52.
+func ExampleWriteAll_wasm() {
 	// In a real WASM application, this would write an OSC 52 sequence
 	// In a terminal that supports OSC 52 (Kitty, iTerm2, Alacritty), the text is copied
 
@@ -35,8 +35,8 @@ func ExampleWasmWriteOSC52() {
 	// Output: Text written to clipboard via OSC 52
 }
 
-// ExampleWasmReadNotSupported demonstrates that ReadAll is not yet supported in WASM.
-func ExampleWasmReadNotSupported() {
+// ExampleReadAll demonstrates that ReadAll is not yet supported in WASM.
+func ExampleReadAll_wasm() {
 	text, err := clipboard.ReadAll()
 
 	if err != nil {

@@ -31,16 +31,6 @@ func readAll() (string, error) {
 	return "", errors.New("clipboard read not supported in WASM mode; browser API support coming in Phase 2")
 }
 
-func isTerminal() bool {
-	stat, err := os.Stdout.Stat()
-	if err != nil {
-		return false
-	}
-	// Check if stdout is a character device (terminal)
-	// This is OS-specific; for WASM in browser, stdout may not have meaningful mode
-	return (stat.Mode() & os.ModeCharDevice) != 0
-}
-
 func init() {
 	mode := os.Getenv("CLIPBOARD_MODE")
 

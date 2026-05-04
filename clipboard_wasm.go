@@ -48,13 +48,19 @@ func init() {
 		return
 	}
 
-	// Auto-detect: check TERM environment variable
+	// Auto-detect: check TERM and verify stdout is a terminal
 	term := os.Getenv("TERM")
 	if term == "" {
 		Unsupported = true
 		return
 	}
 
-	// If TERM is set, assume we're in a terminal environment
-	// OSC 52 support depends on the specific terminal, but presence of TERM is a good indicator
+	// Verify stdout is actually a terminal (TTY) to avoid writing escape sequences to logs/files
+	stat, err := os.Stdout.Stat()
+	if err != nil || (stat.Mode()&os.ModeCharDevice) == 0 {
+		Unsupported = true
+		return
+	}
+
+	// Both TERM is set and stdout is a terminal; OSC 52 should work
 }

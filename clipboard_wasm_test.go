@@ -25,7 +25,7 @@ func TestOSC52EncodingMultiple(t *testing.T) {
 		expected string
 	}{
 		{"hello", "\x1b]52;c;aGVsbG8=\x07"},
-		{"", "\x1b]52;c;=\x07"},
+		{"", "\x1b]52;c;\x07"},
 		{"a\nb", "\x1b]52;c;YQpi\x07"},
 	}
 	for _, tt := range tests {

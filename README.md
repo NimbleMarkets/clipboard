@@ -15,10 +15,7 @@ Platforms:
 * OSX
 * Windows 7 (probably work on other Windows)
 * Linux, Unix (requires 'xclip' or 'xsel' command to be installed)
-
-## WebAssembly (WASM) Support
-
-WASM builds (`GOOS=js GOARCH=wasm`) support clipboard operations via **OSC 52 escape sequences**, a terminal-based clipboard protocol supported by Kitty, iTerm2, Alacritty, WezTerm, and other terminals.
+* WebAssembly (WASM, `GOOS=js GOARCH=wasm`, requires support for **OSC 52 escape sequences**) 
 
 ### Current Features
 - `WriteAll()` encodes text as OSC 52 escape sequences and sends to stdout

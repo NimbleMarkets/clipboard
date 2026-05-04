@@ -37,13 +37,20 @@ GOOS=js GOARCH=wasm go build ./...
 - **Caller Responsibility**: Applications are responsible for higher-level gating if clipboard access should be restricted
 
 ### Testing with OSC 52
-To test `WriteAll()` in WASM mode, run in a terminal that supports OSC 52 (e.g., Kitty, iTerm2, Alacritty):
+To test `WriteAll()` in WASM mode, you need a WASM runtime (e.g., Node.js with WASM support, wasmtime, or a browser). 
 
+Example with Node.js:
 ```bash
-GOOS=js GOARCH=wasm go run ./cmd/gocopy < input.txt  # Writes OSC 52 to stdout
+# Build WASM binary
+GOOS=js GOARCH=wasm go build -o clipboard.wasm ./cmd/gocopy
+
+# Run with Node.js (requires WASM runtime support)
+node -e "const fs = require('fs'); const buf = fs.readFileSync('clipboard.wasm'); WebAssembly.instantiate(buf, {}).catch(e => console.error(e));"
 ```
 
-The escape sequence will be visible in the terminal (as `^[]52;c;...^G` or similar). In supported terminals, the text will be copied to the clipboard.
+The escape sequence will be written to stdout (visible as `^[]52;c;...^G` or similar in compatible terminals). In terminals supporting OSC 52 (Kitty, iTerm2, Alacritty, WezTerm), the text will be copied to the clipboard.
+
+**Note:** OSC 52 clipboard support depends entirely on the terminal or runtime environment. WASM runtimes like Node.js or browser environments may not support OSC 52 escape sequences.
 
 Document: 
 

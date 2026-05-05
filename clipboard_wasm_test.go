@@ -183,3 +183,46 @@ func TestReadAllDispatch(t *testing.T) {
 		}
 	})
 }
+
+func TestWriteAllDispatch(t *testing.T) {
+	// Save original clipboardMode and Unsupported state
+	oldMode := clipboardMode
+	oldUnsupported := Unsupported
+	defer func() {
+		clipboardMode = oldMode
+		Unsupported = oldUnsupported
+	}()
+
+	// Test 1: Browser mode should not panic and attempt to write
+	t.Run("browser_mode", func(t *testing.T) {
+		clipboardMode = "browser"
+		Unsupported = false
+		// Just verify it doesn't panic; actual browser API test is deferred to full JS test
+		_ = writeAll("test")
+	})
+
+	// Test 2: OSC 52 mode should try to write (no "not supported" error)
+	t.Run("osc52_mode", func(t *testing.T) {
+		clipboardMode = "osc52"
+		Unsupported = false
+		err := writeAll("test")
+		// In OSC 52 mode, writeAll should attempt to write to stdout
+		// Error may occur, but should not be "not supported" error
+		if err != nil && strings.Contains(err.Error(), "not supported") {
+			t.Errorf("writeAll() in OSC 52 mode should not return 'not supported' error, got %q", err.Error())
+		}
+	})
+
+	// Test 3: Unsupported flag should return error containing "not available"
+	t.Run("unsupported", func(t *testing.T) {
+		clipboardMode = "browser"
+		Unsupported = true
+		err := writeAll("test")
+		if err == nil {
+			t.Error("writeAll() should return error when Unsupported is true")
+		}
+		if err != nil && !strings.Contains(err.Error(), "not available") {
+			t.Errorf("Error should contain 'not available', got %q", err.Error())
+		}
+	})
+}

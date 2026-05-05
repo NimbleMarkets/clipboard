@@ -32,6 +32,19 @@ func writeAll(text string) error {
 	if Unsupported {
 		return errors.New(wasmUnsupportedErr)
 	}
+
+	switch clipboardMode {
+	case "browser":
+		return writeBrowserClipboard(text)
+	case "osc52":
+		return writeOSC52(text)
+	default:
+		return errors.New(wasmUnsupportedErr)
+	}
+}
+
+// writeOSC52 writes text to the terminal using the OSC 52 escape sequence
+func writeOSC52(text string) error {
 	sequence := encodeOSC52(text)
 	_, err := os.Stdout.Write([]byte(sequence))
 	return err

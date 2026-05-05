@@ -38,7 +38,18 @@ func writeAll(text string) error {
 }
 
 func readAll() (string, error) {
-	return "", errors.New("clipboard read not supported in WASM mode; browser API support coming in Phase 2")
+	if Unsupported {
+		return "", errors.New(wasmUnsupportedErr)
+	}
+
+	switch clipboardMode {
+	case "browser":
+		return readBrowserClipboard()
+	case "osc52":
+		return "", errors.New("clipboard read not supported in OSC 52 mode")
+	default:
+		return "", errors.New(wasmUnsupportedErr)
+	}
 }
 
 // isBrowserEnvironment checks if navigator.clipboard exists in the JavaScript environment

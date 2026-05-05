@@ -139,3 +139,47 @@ func TestDetectClipboardMode(t *testing.T) {
 	// In non-TTY environment (testing), should return "" or "browser"
 	_ = mode
 }
+
+func TestReadAllDispatch(t *testing.T) {
+	// Save original clipboardMode and Unsupported state
+	oldMode := clipboardMode
+	oldUnsupported := Unsupported
+	defer func() {
+		clipboardMode = oldMode
+		Unsupported = oldUnsupported
+	}()
+
+	// Test 1: Browser mode should not panic and attempt to read
+	t.Run("browser_mode", func(t *testing.T) {
+		clipboardMode = "browser"
+		Unsupported = false
+		// Just verify it doesn't panic; actual browser API test is deferred to full JS test
+		_, _ = readAll()
+	})
+
+	// Test 2: OSC 52 mode should return error
+	t.Run("osc52_mode", func(t *testing.T) {
+		clipboardMode = "osc52"
+		Unsupported = false
+		_, err := readAll()
+		if err == nil {
+			t.Error("readAll() should return error in OSC 52 mode")
+		}
+		if err != nil && !strings.Contains(err.Error(), "not supported") {
+			t.Errorf("Error should contain 'not supported', got %q", err.Error())
+		}
+	})
+
+	// Test 3: Unsupported flag should return error
+	t.Run("unsupported", func(t *testing.T) {
+		clipboardMode = "browser"
+		Unsupported = true
+		_, err := readAll()
+		if err == nil {
+			t.Error("readAll() should return error when Unsupported is true")
+		}
+		if err != nil && !strings.Contains(err.Error(), "not available") {
+			t.Errorf("Error should contain 'not available', got %q", err.Error())
+		}
+	})
+}

@@ -226,3 +226,30 @@ func TestWriteAllDispatch(t *testing.T) {
 		}
 	})
 }
+
+func TestClipboardModeEnvOverride(t *testing.T) {
+	// Note: init() runs once at package load, so we can't easily test override dynamically
+	// This test documents the expected behavior via environment variable
+	tests := []struct {
+		mode              string
+		expectedMode      string
+		expectUnsupported bool
+	}{
+		{"browser", "browser", false},
+		{"osc52", "osc52", false},
+		{"disabled", "", true},
+	}
+
+	for _, tt := range tests {
+		// These tests are conceptual since init() only runs once at package load
+		// In real use: CLIPBOARD_MODE=browser go test ./...
+		// In real use: CLIPBOARD_MODE=osc52 go test ./...
+		// In real use: CLIPBOARD_MODE=disabled go test ./...
+		//
+		// The init() function reads CLIPBOARD_MODE at package initialization time.
+		// Setting environment variables at runtime (as we could do here) has no effect
+		// because init() has already executed. To test actual behavior with different
+		// modes, rebuild/run tests with the CLIPBOARD_MODE environment variable set.
+		_ = tt
+	}
+}

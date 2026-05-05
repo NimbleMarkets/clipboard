@@ -105,3 +105,37 @@ func TestWriteAllWhenUnsupported(t *testing.T) {
 		t.Errorf("Error message should mention 'not available', got %q", err.Error())
 	}
 }
+
+func TestIsBrowserEnvironment(t *testing.T) {
+	// This function checks if navigator.clipboard exists
+	// In non-WASM environments, it will return false
+	result := isBrowserEnvironment()
+	// We just verify it doesn't panic and returns a bool
+	_ = result
+}
+
+func TestHasHTTPSOrLocalhost(t *testing.T) {
+	// This function checks location protocol and hostname
+	// In non-WASM environments, it will return false
+	result := hasHTTPSOrLocalhost()
+	// We just verify it doesn't panic and returns a bool
+	_ = result
+}
+
+func TestDetectClipboardMode(t *testing.T) {
+	// Save original env
+	oldTerm := os.Getenv("TERM")
+	defer os.Setenv("TERM", oldTerm)
+
+	// Test case 1: No TERM variable set
+	os.Unsetenv("TERM")
+	mode := detectClipboardMode()
+	// In browser environment, should return "browser"; in non-browser, should return ""
+	_ = mode
+
+	// Test case 2: TERM is set, but stdout is not a TTY (as in testing)
+	os.Setenv("TERM", "xterm-256color")
+	mode = detectClipboardMode()
+	// In non-TTY environment (testing), should return "" or "browser"
+	_ = mode
+}
